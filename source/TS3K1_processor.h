@@ -59,6 +59,7 @@ protected:
     double adsrVolume = 1.;
     double Osc1 = defaultOsc1;
     double Osc2 = defaultOsc2;
+    double Decay = defaultDecay;
     double Osc1Phase = 0.;
     double Osc2Phase = 0.;
     double masterOscFrequency = 0.;

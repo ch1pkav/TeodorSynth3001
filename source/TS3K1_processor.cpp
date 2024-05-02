@@ -91,6 +91,9 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     case kOsc2:
                         Osc2 = static_cast<double>(value);
                         break;
+                    case kDecay:
+                        Decay = static_cast<double>(value);
+                        break;
 				}
 			}
 		}
@@ -138,6 +141,8 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                 Osc1Phase += masterOscDeltaAngle * 2;
                 Osc2Phase += masterOscDeltaAngle;
                 float out = (osc1 + osc2) * masterVolume;
+                if (sample % 1000 == 0)
+                    masterVolume *= Decay;
                 for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
                 {
                     data.outputs[0].channelBuffers32[channel][sample] = out;
