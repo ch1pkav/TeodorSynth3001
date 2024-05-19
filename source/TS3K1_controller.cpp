@@ -30,7 +30,8 @@ tresult PLUGIN_API CTeodorSynth3001Controller::initialize (FUnknown* context)
     Steinberg::Vst::EditController::setKnobMode(Vst::kLinearMode);
     parameters.addParameter(STR16("Osc1"), nullptr, 0, defaultOsc1, Vst::ParameterInfo::kCanAutomate, kOsc1);
     parameters.addParameter(STR16("Osc2"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kOsc2);
-    parameters.addParameter(STR16("Decay"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kDecay);
+    parameters.addParameter(STR16("Attack"), nullptr, 0, defaultAttack, Vst::ParameterInfo::kCanAutomate, kAttack);
+    parameters.addParameter(STR16("Decay"), nullptr, 0, defaultDecay, Vst::ParameterInfo::kCanAutomate, kDecay);
 
 	return result;
 }
@@ -60,6 +61,9 @@ tresult PLUGIN_API CTeodorSynth3001Controller::setComponentState (IBStream* stat
     if(!streamer.readDouble(fval))
         return kResultFalse;
     setParamNormalized(kOsc2, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kAttack, fval);
     if(!streamer.readDouble(fval))
         return kResultFalse;
     setParamNormalized(kDecay, fval);

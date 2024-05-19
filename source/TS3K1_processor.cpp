@@ -92,6 +92,9 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     case kOsc2:
                         voice.Osc2 = static_cast<double>(value);
                         break;
+                    case kAttack:
+                        voice.Attack = static_cast<double>(value);
+                        break;
                     case kDecay:
                         voice.Decay = static_cast<double>(value);
                         break;
@@ -114,10 +117,11 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                             if (voice.masterVolume <= 0.00001) {
                                 voice.masterOscFrequency = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
                                 voice.masterOscDeltaAngle = voice.masterOscFrequency / data.processContext->sampleRate * f2PI;
-                                voice.masterVolume = 0.3;
+                                voice.masterVolume = 0.0001;
                                 voice.Osc1Phase = 0.;
                                 voice.Osc2Phase = 0.;
                                 voice.pitch = event.noteOn.pitch;
+                                voice.envelopeState = EnvelopeState::Attack;
                                 break;
                             }
                         }
@@ -149,8 +153,16 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     voice.Osc1Phase += voice.masterOscDeltaAngle * 2;
                     voice.Osc2Phase += voice.masterOscDeltaAngle;
                     out += (osc1 + osc2) * voice.masterVolume;
-                    if (sample % 1000 == 0)
-                        voice.masterVolume *= voice.Decay;
+                    if (sample % 1000 == 0) {
+                        if (voice.envelopeState == EnvelopeState::Attack) {
+                            voice.masterVolume /= voice.Attack;
+                            if (voice.masterVolume >= 0.2) {
+                                voice.envelopeState = EnvelopeState::Decay;
+                            }
+                        } else if (voice.envelopeState == EnvelopeState::Decay) {
+                            voice.masterVolume *= voice.Decay;
+                        }
+                    }
                 }
                 for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
                 {

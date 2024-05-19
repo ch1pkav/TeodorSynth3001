@@ -53,9 +53,15 @@ public:
 
 //------------------------------------------------------------------------
 protected:
+    enum class EnvelopeState {
+        Attack,
+        Decay,
+    };
+
     struct Voice {
         double Osc1 = defaultOsc1;
         double Osc2 = defaultOsc2;
+        double Attack = defaultAttack;
         double Decay = defaultDecay;
         double Osc1Phase = 0.;
         double Osc2Phase = 0.;
@@ -63,6 +69,7 @@ protected:
         double masterVolume = 0.;
         double masterOscDeltaAngle = 0.;
         int16 pitch;
+        EnvelopeState envelopeState = EnvelopeState::Attack;
     };
 
     VoiceProcessor<Voice> voices;
