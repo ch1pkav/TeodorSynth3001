@@ -7,6 +7,7 @@
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "params.h"
 #include "note_processor.hpp"
+#include "common.hpp"
 #include <numbers>
 
 namespace ts3k1 {
@@ -66,12 +67,14 @@ protected:
         double deltaAngle = 0.;
         int16 pitch;
         EnvelopeState envelopeState = EnvelopeState::Attack;
+        LowPassFilter lowPassFilter{44100, defaultLPCutoff};
     };
 
     double Osc1 = defaultOsc1;
     double Osc2 = defaultOsc2;
     double Attack = defaultAttack;
     double Decay = defaultDecay;
+    double LPCutoff = defaultLPCutoff*100;
 
     VoiceProcessor<Voice> voices;
 };

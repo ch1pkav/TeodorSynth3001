@@ -75,20 +75,15 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
 {
 	//--- First : Read inputs parameter changes-----------
 
-    if (data.inputParameterChanges)
-    {
-        int32 numParamsChanged = data.inputParameterChanges->getParameterCount ();
-        for (int32 index = 0; index < numParamsChanged; index++)
-        {
-            if (auto* paramQueue = data.inputParameterChanges->getParameterData (index))
-            {
+    if (data.inputParameterChanges) {
+        int32 numParamsChanged = data.inputParameterChanges->getParameterCount();
+        for (int32 index = 0; index < numParamsChanged; index++) {
+            if (auto *paramQueue = data.inputParameterChanges->getParameterData(index)) {
                 Vst::ParamValue value;
                 int32 sampleOffset;
-                int32 numPoints = paramQueue->getPointCount ();
-                paramQueue -> getPoint (numPoints - 1, sampleOffset, value);
-                for (auto & voice: voices)
-                switch (paramQueue->getParameterId ())
-                {
+                int32 numPoints = paramQueue->getPointCount();
+                paramQueue->getPoint(numPoints - 1, sampleOffset, value);
+                switch (paramQueue->getParameterId()) {
                     case kOsc1:
                         Osc1 = static_cast<double>(value);
                         break;
@@ -101,11 +96,14 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     case kDecay:
                         Decay = static_cast<double>(value);
                         break;
-				}
-			}
-		}
-	}
-	
+                    case kLPCutoff:
+                        LPCutoff = static_cast<double>(value)*100;
+                        break;
+                }
+            }
+        }
+    }
+
 	//--- Here you have to implement your processing
     auto * events = data.inputEvents;
     if (events)
@@ -120,7 +118,9 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                             if (voice.volume <= 0.00001) {
                                 voice.masterOscFrequency = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
                                 voice.deltaAngle = voice.masterOscFrequency / data.processContext->sampleRate * f2PI;
+                                voice.lowPassFilter.setSampleRate(data.processContext->sampleRate);
                                 voice.volume = 0.0001;
+                                voice.lowPassFilter.setCutoff(LPCutoff);
                                 voice.Osc1Phase = 0.;
                                 voice.Osc2Phase = 0.;
                                 voice.pitch = event.noteOn.pitch;
@@ -155,7 +155,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     float osc2 = Osc2 * std::sin(voice.Osc2Phase);
                     voice.Osc1Phase += voice.deltaAngle * 2;
                     voice.Osc2Phase += voice.deltaAngle;
-                    out += (osc1 + osc2) * voice.volume;
+                    out += voice.lowPassFilter.process(osc1 + osc2) * voice.volume;
                     if (sample % 1000 == 0) {
                         if (voice.envelopeState == EnvelopeState::Attack) {
                             voice.volume /= Attack;
@@ -169,7 +169,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                 });
                 for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
                 {
-                    data.outputs[0].channelBuffers32[channel][sample] = out;
+                    data.outputs[0].channelBuffers32[channel][sample] = out / voices.size();
                 }
 
             }
@@ -216,6 +216,8 @@ tresult PLUGIN_API CTeodorSynth3001Processor::setState (IBStream* state)
     Attack = fval;
     if (!streamer.readDouble(fval)) return kResultFalse;
     Decay = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    LPCutoff = fval;
 
 	return kResultOk;
 }
@@ -229,6 +231,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::getState (IBStream* state)
     streamer.writeDouble(Osc2);
     streamer.writeDouble(Attack);
     streamer.writeDouble(Decay);
+    streamer.writeDouble(LPCutoff);
 
 	return kResultOk;
 }

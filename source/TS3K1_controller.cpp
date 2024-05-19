@@ -32,6 +32,7 @@ tresult PLUGIN_API CTeodorSynth3001Controller::initialize (FUnknown* context)
     parameters.addParameter(STR16("Osc2"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kOsc2);
     parameters.addParameter(STR16("Attack"), nullptr, 0, defaultAttack, Vst::ParameterInfo::kCanAutomate, kAttack);
     parameters.addParameter(STR16("Decay"), nullptr, 0, defaultDecay, Vst::ParameterInfo::kCanAutomate, kDecay);
+    parameters.addParameter(STR16("LPCutoff"), nullptr, 0, defaultLPCutoff, Vst::ParameterInfo::kCanAutomate, kLPCutoff);
 
 	return result;
 }
@@ -67,6 +68,9 @@ tresult PLUGIN_API CTeodorSynth3001Controller::setComponentState (IBStream* stat
     if(!streamer.readDouble(fval))
         return kResultFalse;
     setParamNormalized(kDecay, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kLPCutoff, fval);
 
 	return kResultOk;
 }
