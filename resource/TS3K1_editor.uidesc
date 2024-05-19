@@ -3,7 +3,7 @@
     <template name="view" origin="0.0" size="800, 180" background-color="333333">
       <view class="CKnob" control-tag="OSC1" origin="100, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="OSC1" />
       <view class="CKnob" control-tag="OSC2" origin="200, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="OSC2" />
-      <view class="CKnob" control-tag="OSC2" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="Decay" />
+      <view class="CKnob" control-tag="DECAY" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="Decay" />
     </template>
     <control-tags>
         <control-tag name="OSC1" size="4" tag="100"/>

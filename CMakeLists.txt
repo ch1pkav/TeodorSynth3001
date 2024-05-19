@@ -32,6 +32,13 @@ smtg_add_vst3plugin(TeodorSynth3001
     source/common.hpp
     source/dsp.hpp
     source/note_processor.hpp
+        source/baseController.cpp
+        source/baseController.h
+        source/helpers.h
+        source/baseProcessor.cpp
+        source/baseController.h
+        source/mdaParameter.cpp
+        source/mdaParameter.cpp
 )
 
 #- VSTGUI Wanted ----
