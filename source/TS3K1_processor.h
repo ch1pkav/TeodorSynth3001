@@ -59,18 +59,19 @@ protected:
     };
 
     struct Voice {
-        double Osc1 = defaultOsc1;
-        double Osc2 = defaultOsc2;
-        double Attack = defaultAttack;
-        double Decay = defaultDecay;
         double Osc1Phase = 0.;
         double Osc2Phase = 0.;
         double masterOscFrequency = 0.;
-        double masterVolume = 0.;
-        double masterOscDeltaAngle = 0.;
+        double volume = 0.;
+        double deltaAngle = 0.;
         int16 pitch;
         EnvelopeState envelopeState = EnvelopeState::Attack;
     };
+
+    double Osc1 = defaultOsc1;
+    double Osc2 = defaultOsc2;
+    double Attack = defaultAttack;
+    double Decay = defaultDecay;
 
     VoiceProcessor<Voice> voices;
 };

@@ -34,6 +34,14 @@ smtg_add_vst3plugin(TeodorSynth3001
     source/note_processor.hpp
 )
 
+find_package(TBB REQUIRED)
+find_package(Threads REQUIRED)
+target_link_libraries(TeodorSynth3001
+    PRIVATE
+        Threads::Threads
+        TBB::tbb
+)
+
 #- VSTGUI Wanted ----
 if(SMTG_ENABLE_VSTGUI_SUPPORT)
     target_sources(TeodorSynth3001
