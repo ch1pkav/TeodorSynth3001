@@ -83,16 +83,17 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                 int32 sampleOffset;
                 int32 numPoints = paramQueue->getPointCount ();
                 paramQueue -> getPoint (numPoints - 1, sampleOffset, value);
+                for (auto & voice: voices)
                 switch (paramQueue->getParameterId ())
                 {
                     case kOsc1:
-                        Osc1 = static_cast<double>(value);
+                        voice.Osc1 = static_cast<double>(value);
                         break;
                     case kOsc2:
-                        Osc2 = static_cast<double>(value);
+                        voice.Osc2 = static_cast<double>(value);
                         break;
                     case kDecay:
-                        Decay = static_cast<double>(value);
+                        voice.Decay = static_cast<double>(value);
                         break;
 				}
 			}
@@ -108,19 +109,24 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
             Vst::Event event {};
             if (events->getEvent (i, event) == kResultOk)
             {
-                // TODO: make more sense of this code
-                switch (event.type) {
-                    case Vst::Event::kNoteOnEvent:
-                        masterOscFrequency = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
-                        masterOscDeltaAngle = masterOscFrequency / data.processContext->sampleRate * f2PI;
-                        masterVolume = 0.3;
-                        Osc1Phase = 0.;
-                        Osc2Phase = 0.;
-                        break;
-                    case Vst::Event::kNoteOffEvent:
-                        masterVolume = 0.;
-                        break;
-                }
+                    if (event.type == Vst::Event::kNoteOnEvent) {
+                        for (auto& voice: voices) {
+                            if (voice.masterVolume <= 0.00001) {
+                                voice.masterOscFrequency = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
+                                voice.masterOscDeltaAngle = voice.masterOscFrequency / data.processContext->sampleRate * f2PI;
+                                voice.masterVolume = 0.3;
+                                voice.Osc1Phase = 0.;
+                                voice.Osc2Phase = 0.;
+                                voice.pitch = event.noteOn.pitch;
+                                break;
+                            }
+                        }
+                    }
+                    else if (event.type == Vst::Event::kNoteOffEvent) {
+                        for (auto& voice: voices) if (event.noteOff.pitch == voice.pitch) {
+                            voice.masterVolume = 0;
+                        }
+                    }
             }
         }
     }
@@ -134,15 +140,18 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
     {
         if (data.numSamples > 0)
         {
+            float out = 0;
             for (int32 sample = 0; sample < data.numSamples; sample++)
             {
-                float osc1 = Osc1 * sgn(std::sin(Osc1Phase));
-                float osc2 = Osc2 * std::sin(Osc2Phase);
-                Osc1Phase += masterOscDeltaAngle * 2;
-                Osc2Phase += masterOscDeltaAngle;
-                float out = (osc1 + osc2) * masterVolume;
-                if (sample % 1000 == 0)
-                    masterVolume *= Decay;
+                for (auto& voice: voices) {
+                    float osc1 = voice.Osc1 * sgn(std::sin(voice.Osc1Phase));
+                    float osc2 = voice.Osc2 * std::sin(voice.Osc2Phase);
+                    voice.Osc1Phase += voice.masterOscDeltaAngle * 2;
+                    voice.Osc2Phase += voice.masterOscDeltaAngle;
+                    out += (osc1 + osc2) * voice.masterVolume;
+                    if (sample % 1000 == 0)
+                        voice.masterVolume *= voice.Decay;
+                }
                 for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
                 {
                     data.outputs[0].channelBuffers32[channel][sample] = out;
@@ -183,11 +192,11 @@ tresult PLUGIN_API CTeodorSynth3001Processor::setState (IBStream* state)
 	// called when we load a preset, the model has to be reloaded
 	IBStreamer streamer (state, kLittleEndian);
 
-    double fval;
-    if (!streamer.readDouble(fval)) return kResultFalse;
-    Osc1 = fval;
-    if (!streamer.readDouble(fval)) return kResultFalse;
-    Osc2 = fval;
+//    double fval;
+//    if (!streamer.readDouble(fval)) return kResultFalse;
+//    Osc1 = fval;
+//    if (!streamer.readDouble(fval)) return kResultFalse;
+//    Osc2 = fval;
 
 	return kResultOk;
 }
@@ -197,22 +206,11 @@ tresult PLUGIN_API CTeodorSynth3001Processor::getState (IBStream* state)
 {
 	// here we need to save the model
 	IBStreamer streamer (state, kLittleEndian);
-    streamer.writeDouble(Osc1);
-    streamer.writeDouble(Osc2);
+//    streamer.writeDouble(Osc1);
+//    streamer.writeDouble(Osc2);
 
 	return kResultOk;
 }
-
-
-    void CTeodorSynth3001Processor::adsrUpdater() {
-        adsrVolume = 1.;
-        adsrCounter = 1;
-        if (adsrCounter < 10000) {
-            adsrVolume *= 1.1;
-        } else
-            adsrVolume *= 0.999;
-
-    }
 
 //------------------------------------------------------------------------
 } // namespace ts3k1

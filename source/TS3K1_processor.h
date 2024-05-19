@@ -51,24 +51,21 @@ public:
 	Steinberg::tresult PLUGIN_API setState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API getState (Steinberg::IBStream* state) SMTG_OVERRIDE;
 
-    inline void adsrUpdater();
-
 //------------------------------------------------------------------------
 protected:
-    size_t adsrCounter = 0;
-    double adsrVolume = 1.;
-    double Osc1 = defaultOsc1;
-    double Osc2 = defaultOsc2;
-    double Decay = defaultDecay;
-    double Osc1Phase = 0.;
-    double Osc2Phase = 0.;
-    double masterOscFrequency = 0.;
-    double masterVolume = 0.;
-    double masterOscDeltaAngle = 0.;
-    static inline constexpr auto f2PI = std::numbers::pi * 2.;
-    NoteProcessor noteProcessor;
+    struct Voice {
+        double Osc1 = defaultOsc1;
+        double Osc2 = defaultOsc2;
+        double Decay = defaultDecay;
+        double Osc1Phase = 0.;
+        double Osc2Phase = 0.;
+        double masterOscFrequency = 0.;
+        double masterVolume = 0.;
+        double masterOscDeltaAngle = 0.;
+        int16 pitch;
+    };
 
-
+    VoiceProcessor<Voice> voices;
 };
 
 //------------------------------------------------------------------------
