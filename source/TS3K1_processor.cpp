@@ -259,11 +259,21 @@ tresult PLUGIN_API CTeodorSynth3001Processor::setState (IBStream* state)
     if (!streamer.readDouble(fval)) return kResultFalse;
     Osc2 = fval;
     if (!streamer.readDouble(fval)) return kResultFalse;
+    Noise = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    Wav1 = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    Wav2 = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
     Attack = fval;
     if (!streamer.readDouble(fval)) return kResultFalse;
     Decay = fval;
     if (!streamer.readDouble(fval)) return kResultFalse;
     LPCutoff = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    LPOn = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    LPEnv = fval;
 
 	return kResultOk;
 }
@@ -275,9 +285,14 @@ tresult PLUGIN_API CTeodorSynth3001Processor::getState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
     streamer.writeDouble(Osc1);
     streamer.writeDouble(Osc2);
+    streamer.writeDouble(Noise);
+    streamer.writeDouble(Wav1);
+    streamer.writeDouble(Wav2);
     streamer.writeDouble(Attack);
     streamer.writeDouble(Decay);
     streamer.writeDouble(LPCutoff);
+    streamer.writeDouble(LPOn);
+    streamer.writeDouble(LPEnv);
 
 	return kResultOk;
 }
