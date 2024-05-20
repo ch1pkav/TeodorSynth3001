@@ -180,15 +180,20 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
 
     if (data.symbolicSampleSize == Vst::kSample32)
     {
+        for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
+        {
+            memset(data.outputs[0].channelBuffers32[channel], 0, data.numSamples * sizeof(float));
+        }
         if (data.numSamples > 0)
         {
-            std::atomic<double> out = 0;
+            data.outputs[0].silenceFlags = 0;
             for (int32 sample = 0; sample < data.numSamples; sample++)
             {
                 std::for_each(std::execution::par_unseq, voices.begin(), voices.end(), [&](auto & voice) {
                     if (voice.volume <= 0.00001) {
                         return;
                     }
+                    double out = 0;
                     double osc1 = Osc1 * voice.waveform1(voice.Osc1Phase);
                     double osc2 = Osc2 * voice.waveform2(voice.Osc2Phase);
                     double noise_ = voice.noise * noise(voice.Osc1Phase);
@@ -198,6 +203,10 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         out += voice.lowPassFilter.process(osc1 + osc2 + noise_) * voice.volume;
                     } else {
                         out += (osc1 + osc2 + noise_) * voice.volume;
+                    }
+                    for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
+                    {
+                        data.outputs[0].channelBuffers32[channel][sample] += out / voices.size();
                     }
                     if (sample % 8000 == 0) {
                         if (voice.envelopeState == EnvelopeState::Attack) {
@@ -213,10 +222,6 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         voice.lowPassFilter.setCutoff(LPCutoff * voice.volume * 2);
                     }
                 });
-                for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
-                {
-                    data.outputs[0].channelBuffers32[channel][sample] = out / voices.size();
-                }
 
             }
         }

@@ -12,6 +12,11 @@ namespace ts3k1 {
         return (T(0) < val) - (val < T(0));
     }
 
+    enum class EnvelopeState {
+        Attack,
+        Decay,
+    };
+
     class LowPassFilter {
     public:
         explicit LowPassFilter(float sampleRate, float cutoff) : sampleRate(sampleRate), cutoff(cutoff) {

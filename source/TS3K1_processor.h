@@ -55,10 +55,6 @@ public:
 
 //------------------------------------------------------------------------
 protected:
-    enum class EnvelopeState {
-        Attack,
-        Decay,
-    };
 
     struct Voice {
         double Osc1Phase = 0.;
