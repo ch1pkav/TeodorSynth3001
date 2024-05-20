@@ -100,7 +100,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         Wav2 = static_cast<double>(value);
                         break;
                     case kAttack:
-                        Attack = static_cast<double>(value);
+                        Attack = static_cast<double>(value) + 0.0001;
                         break;
                     case kDecay:
                         Decay = static_cast<double>(value);

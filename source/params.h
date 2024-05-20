@@ -25,4 +25,4 @@ static constexpr auto defaultAttack = 0.1;
 static constexpr auto defaultLPCutoff = 0.03;
 static constexpr auto defaultLPOn = 0.;
 static constexpr auto defaultLPEnv = 0.;
-static constexpr auto defaultMasterVolume = 0.5;
+static constexpr auto defaultMasterVolume = 0.3;
