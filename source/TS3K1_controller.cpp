@@ -29,10 +29,15 @@ tresult PLUGIN_API CTeodorSynth3001Controller::initialize (FUnknown* context)
 	// Here you could register some parameters
     Steinberg::Vst::EditController::setKnobMode(Vst::kLinearMode);
     parameters.addParameter(STR16("Osc1"), nullptr, 0, defaultOsc1, Vst::ParameterInfo::kCanAutomate, kOsc1);
+    parameters.addParameter(STR16("Wav1"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kWav1);
     parameters.addParameter(STR16("Osc2"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kOsc2);
+    parameters.addParameter(STR16("Wav2"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kWav2);
+    parameters.addParameter(STR16("Noise"), nullptr, 0, defaultOsc2, Vst::ParameterInfo::kCanAutomate, kNoise);
     parameters.addParameter(STR16("Attack"), nullptr, 0, defaultAttack, Vst::ParameterInfo::kCanAutomate, kAttack);
     parameters.addParameter(STR16("Decay"), nullptr, 0, defaultDecay, Vst::ParameterInfo::kCanAutomate, kDecay);
     parameters.addParameter(STR16("LPCutoff"), nullptr, 0, defaultLPCutoff, Vst::ParameterInfo::kCanAutomate, kLPCutoff);
+    parameters.addParameter(STR16("LPOn"), nullptr, 0, 1, Vst::ParameterInfo::kCanAutomate, kLPOn);
+    parameters.addParameter(STR16("LPEnv"), nullptr, 0, 1, Vst::ParameterInfo::kCanAutomate, kLPEnv);
 
 	return result;
 }
@@ -64,6 +69,15 @@ tresult PLUGIN_API CTeodorSynth3001Controller::setComponentState (IBStream* stat
     setParamNormalized(kOsc2, fval);
     if(!streamer.readDouble(fval))
         return kResultFalse;
+    setParamNormalized(kNoise, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kWav1, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kWav2, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
     setParamNormalized(kAttack, fval);
     if(!streamer.readDouble(fval))
         return kResultFalse;
@@ -71,8 +85,14 @@ tresult PLUGIN_API CTeodorSynth3001Controller::setComponentState (IBStream* stat
     if(!streamer.readDouble(fval))
         return kResultFalse;
     setParamNormalized(kLPCutoff, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kLPOn, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kLPEnv, fval);
+    return kResultOk;
 
-	return kResultOk;
 }
 
 //------------------------------------------------------------------------

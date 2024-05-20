@@ -9,6 +9,7 @@
 #include "note_processor.hpp"
 #include "common.hpp"
 #include <numbers>
+#include "dsp.hpp"
 
 namespace ts3k1 {
 
@@ -62,19 +63,27 @@ protected:
     struct Voice {
         double Osc1Phase = 0.;
         double Osc2Phase = 0.;
-        double masterOscFrequency = 0.;
+        double freq = 0.;
         double volume = 0.;
         double deltaAngle = 0.;
+        double noise = 0.;
         int16 pitch;
         EnvelopeState envelopeState = EnvelopeState::Attack;
         LowPassFilter lowPassFilter{44100, defaultLPCutoff};
+        waveform_t waveform1 = sine_wave;
+        waveform_t waveform2 = sine_wave;
     };
 
     double Osc1 = defaultOsc1;
     double Osc2 = defaultOsc2;
+    double Noise = defaultNoise;
+    double Wav1 = defaultWav1;
+    double Wav2 = defaultWav2;
     double Attack = defaultAttack;
     double Decay = defaultDecay;
-    double LPCutoff = defaultLPCutoff*100;
+    double LPCutoff = defaultLPCutoff*10000;
+    double LPOn = defaultLPOn;
+    double LPEnv = defaultLPEnv;
 
     VoiceProcessor<Voice> voices;
 };

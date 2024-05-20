@@ -2,17 +2,27 @@
 <vstgui-ui-description version="1">
     <template name="view" origin="0.0" size="800, 180" background-color="333333">
       <view class="CKnob" control-tag="OSC1" origin="100, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="OSC1" />
+      <view class="CKnob" control-tag="WAV1" origin="100, 140" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="Waveform osc1" />
       <view class="CKnob" control-tag="OSC2" origin="200, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="OSC2" />
-      <view class="CKnob" control-tag="ATTACK" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="0.7" min-value="0.2" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Attack" />
-      <view class="CKnob" control-tag="DECAY" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0.4" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Decay" />
-      <view class="CKnob" control-tag="LPCUTOFF" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="20000" min-value="10" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Filter Cutoff" />
+      <view class="CKnob" control-tag="WAV2" origin="200, 140" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.1" wheel-inc-value-large="0.5" title="Waveform osc2" />
+      <view class="CKnob" control-tag="NOISE" origin="300, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="0.7" min-value="0.2" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Attack" />
+      <view class="CKnob" control-tag="ATTACK" origin="400, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="0.7" min-value="0.2" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Attack" />
+      <view class="CKnob" control-tag="DECAY" origin="500, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0.4" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Decay" />
+      <view class="CKnob" control-tag="LPCUTOFF" origin="600, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="20000" min-value="10" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Filter Cutoff" />
+      <view class="COnOffButton" control-tag="301" origin="600, 100" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter On/Off" />
+      <view class="COnOffButton" control-tag="302" origin="600, 140" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter Envelope" />
     </template>
     <control-tags>
         <control-tag name="OSC1" size="4" tag="100"/>
+        <control-tag name="WAV1" size="4" tag="103"/>
         <control-tag name="OSC2" size="4" tag="101"/>
+        <control-tag name="WAV2" size="4" tag="104"/>
+        <control-tag name="NOISE" size="4" tag="102"/>
         <control-tag name="ATTACK" size="4" tag="200"/>
         <control-tag name="DECAY" size="4" tag="201"/>
         <control-tag name="LPCUTOFF" size="4" tag="300"/>
+        <control-tag name="LPON" size="4" tag="301"/>
+        <control-tag name="FILTENV" size="4" tag="302"/>
     </control-tags>
 	<fonts>
 	</fonts>

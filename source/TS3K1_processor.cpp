@@ -90,6 +90,15 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     case kOsc2:
                         Osc2 = static_cast<double>(value);
                         break;
+                    case kNoise:
+                        Noise = static_cast<double>(value);
+                        break;
+                    case kWav1:
+                        Wav1 = static_cast<double>(value);
+                        break;
+                    case kWav2:
+                        Wav2 = static_cast<double>(value);
+                        break;
                     case kAttack:
                         Attack = static_cast<double>(value);
                         break;
@@ -98,6 +107,12 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         break;
                     case kLPCutoff:
                         LPCutoff = static_cast<double>(value)*100;
+                        break;
+                    case kLPOn:
+                        LPOn = static_cast<double>(value);
+                        break;
+                    case kLPEnv:
+                        LPEnv = static_cast<double>(value);
                         break;
                 }
             }
@@ -116,15 +131,35 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     if (event.type == Vst::Event::kNoteOnEvent) {
                         for (auto& voice: voices) {
                             if (voice.volume <= 0.00001) {
-                                voice.masterOscFrequency = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
-                                voice.deltaAngle = voice.masterOscFrequency / data.processContext->sampleRate * f2PI;
+                                voice.freq = 440. * std::pow(2., (event.noteOn.pitch - 69.) / 12.);
+                                voice.deltaAngle = voice.freq / data.processContext->sampleRate * f2PI;
                                 voice.lowPassFilter.setSampleRate(data.processContext->sampleRate);
                                 voice.volume = 0.0001;
                                 voice.lowPassFilter.setCutoff(LPCutoff);
                                 voice.Osc1Phase = 0.;
                                 voice.Osc2Phase = 0.;
+                                voice.noise = Noise;
                                 voice.pitch = event.noteOn.pitch;
                                 voice.envelopeState = EnvelopeState::Attack;
+                                if (Wav1 < 0.25) {
+                                    voice.waveform1 = sine_wave;
+                                } else if (Wav1 < 0.5) {
+                                    voice.waveform1 = square_wave;
+                                } else if (Wav1 < 0.75) {
+                                    voice.waveform1 = saw_wave;
+                                } else {
+                                    voice.waveform1 = triangle_wave;
+                                }
+
+                                if (Wav2 < 0.25) {
+                                    voice.waveform2 = sine_wave;
+                                } else if (Wav2 < 0.5) {
+                                    voice.waveform2 = square_wave;
+                                } else if (Wav2 < 0.75) {
+                                    voice.waveform2 = saw_wave;
+                                } else {
+                                    voice.waveform2 = triangle_wave;
+                                }
                                 break;
                             }
                         }
@@ -147,16 +182,24 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
     {
         if (data.numSamples > 0)
         {
-            std::atomic<float> out = 0;
+            std::atomic<double> out = 0;
             for (int32 sample = 0; sample < data.numSamples; sample++)
             {
-                std::for_each(std::execution::par, voices.begin(), voices.end(), [&](auto & voice) {
-                    float osc1 = Osc1 * sgn(std::sin(voice.Osc1Phase));
-                    float osc2 = Osc2 * std::sin(voice.Osc2Phase);
+                std::for_each(std::execution::par_unseq, voices.begin(), voices.end(), [&](auto & voice) {
+                    if (voice.volume <= 0.00001) {
+                        return;
+                    }
+                    double osc1 = Osc1 * voice.waveform1(voice.Osc1Phase);
+                    double osc2 = Osc2 * voice.waveform2(voice.Osc2Phase);
+                    double noise_ = voice.noise * noise(voice.Osc1Phase);
                     voice.Osc1Phase += voice.deltaAngle * 2;
                     voice.Osc2Phase += voice.deltaAngle;
-                    out += voice.lowPassFilter.process(osc1 + osc2) * voice.volume;
-                    if (sample % 1000 == 0) {
+                    if (LPOn > 0.5) {
+                        out += voice.lowPassFilter.process(osc1 + osc2 + noise_) * voice.volume;
+                    } else {
+                        out += (osc1 + osc2 + noise_) * voice.volume;
+                    }
+                    if (sample % 8000 == 0) {
                         if (voice.envelopeState == EnvelopeState::Attack) {
                             voice.volume /= Attack;
                             if (voice.volume >= 0.2) {
@@ -165,6 +208,9 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         } else if (voice.envelopeState == EnvelopeState::Decay) {
                             voice.volume *= Decay;
                         }
+                    }
+                    if (LPEnv > 0.5) {
+                        voice.lowPassFilter.setCutoff(LPCutoff * voice.volume * 2);
                     }
                 });
                 for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)

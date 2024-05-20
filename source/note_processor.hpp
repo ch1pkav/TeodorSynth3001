@@ -6,7 +6,7 @@
 
 using namespace Steinberg;
 
-static inline constexpr auto maxPolyphony = 16;
+static inline constexpr auto maxPolyphony = 4;
 
 namespace ts3k1 {
     template<class Voice>
