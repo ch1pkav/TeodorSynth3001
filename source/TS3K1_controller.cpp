@@ -38,6 +38,7 @@ tresult PLUGIN_API CTeodorSynth3001Controller::initialize (FUnknown* context)
     parameters.addParameter(STR16("LPCutoff"), nullptr, 0, defaultLPCutoff, Vst::ParameterInfo::kCanAutomate, kLPCutoff);
     parameters.addParameter(STR16("LPOn"), nullptr, 0, 1, Vst::ParameterInfo::kCanAutomate, kLPOn);
     parameters.addParameter(STR16("LPEnv"), nullptr, 0, 1, Vst::ParameterInfo::kCanAutomate, kLPEnv);
+    parameters.addParameter(STR16("MasterVol"), nullptr, 0, 1, Vst::ParameterInfo::kCanAutomate, kMasterVolume);
 
 	return result;
 }
@@ -91,6 +92,9 @@ tresult PLUGIN_API CTeodorSynth3001Controller::setComponentState (IBStream* stat
     if(!streamer.readDouble(fval))
         return kResultFalse;
     setParamNormalized(kLPEnv, fval);
+    if(!streamer.readDouble(fval))
+        return kResultFalse;
+    setParamNormalized(kMasterVolume, fval);
     return kResultOk;
 
 }

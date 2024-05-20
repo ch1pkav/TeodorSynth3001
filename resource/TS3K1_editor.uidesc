@@ -9,8 +9,9 @@
       <view class="CKnob" control-tag="ATTACK" origin="400, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="0.7" min-value="0.2" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Attack" />
       <view class="CKnob" control-tag="DECAY" origin="500, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0.4" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Decay" />
       <view class="CKnob" control-tag="LPCUTOFF" origin="600, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="20000" min-value="10" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Filter Cutoff" />
-      <view class="COnOffButton" control-tag="301" origin="600, 100" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter On/Off" />
-      <view class="COnOffButton" control-tag="302" origin="600, 140" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter Envelope" />
+      <view class="COnOffButton" control-tag="LPON" origin="600, 100" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter On/Off" />
+      <view class="COnOffButton" control-tag="FILTENV" origin="600, 140" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" title="Filter Envelope" />
+      <view class="CKnob" control-tag="MASTERVOL" origin="800, 40" size="60, 60" background-color="333333" handle-color="00ff00" draw-back="true" draw-value="true" draw-text="true" max-value="1" min-value="0" wheel-inc-value="0.05" wheel-inc-value-large="0.5" title="Master volume" />
     </template>
     <control-tags>
         <control-tag name="OSC1" size="4" tag="100"/>
@@ -23,6 +24,7 @@
         <control-tag name="LPCUTOFF" size="4" tag="300"/>
         <control-tag name="LPON" size="4" tag="301"/>
         <control-tag name="FILTENV" size="4" tag="302"/>
+        <control-tag name="MASTERVOL" size="4" tag="400"/>
     </control-tags>
 	<fonts>
 	</fonts>

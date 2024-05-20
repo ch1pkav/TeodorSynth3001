@@ -80,6 +80,7 @@ protected:
     double LPCutoff = defaultLPCutoff*10000;
     double LPOn = defaultLPOn;
     double LPEnv = defaultLPEnv;
+    double MasterVolume = defaultMasterVolume;
 
     VoiceProcessor<Voice> voices;
 };

@@ -11,7 +11,8 @@ enum
     kDecay,
     kLPCutoff = 300,
     kLPOn,
-    kLPEnv
+    kLPEnv,
+    kMasterVolume = 400,
 };
 
 static constexpr auto defaultOsc1 = 0.5;
@@ -24,3 +25,4 @@ static constexpr auto defaultAttack = 0.1;
 static constexpr auto defaultLPCutoff = 0.03;
 static constexpr auto defaultLPOn = 0.;
 static constexpr auto defaultLPEnv = 0.;
+static constexpr auto defaultMasterVolume = 0.5;

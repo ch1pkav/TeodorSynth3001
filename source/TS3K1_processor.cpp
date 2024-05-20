@@ -114,6 +114,9 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     case kLPEnv:
                         LPEnv = static_cast<double>(value);
                         break;
+                    case kMasterVolume:
+                        MasterVolume = static_cast<double>(value);
+                        break;
                 }
             }
         }
@@ -206,12 +209,12 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                     }
                     for (int32 channel = 0; channel < data.outputs[0].numChannels; channel++)
                     {
-                        data.outputs[0].channelBuffers32[channel][sample] += out / voices.size();
+                        data.outputs[0].channelBuffers32[channel][sample] += (out * std::exp(MasterVolume*10) / voices.size());
                     }
                     if (sample % 8000 == 0) {
                         if (voice.envelopeState == EnvelopeState::Attack) {
                             voice.volume /= Attack;
-                            if (voice.volume >= 0.2) {
+                            if (voice.volume >= 0.5) {
                                 voice.envelopeState = EnvelopeState::Decay;
                             }
                         } else if (voice.envelopeState == EnvelopeState::Decay) {
@@ -219,7 +222,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::process (Vst::ProcessData& data)
                         }
                     }
                     if (LPEnv > 0.5) {
-                        voice.lowPassFilter.setCutoff(LPCutoff * voice.volume * 2);
+                        voice.lowPassFilter.setCutoff(LPCutoff * voice.volume * 4);
                     }
                 });
 
@@ -279,6 +282,8 @@ tresult PLUGIN_API CTeodorSynth3001Processor::setState (IBStream* state)
     LPOn = fval;
     if (!streamer.readDouble(fval)) return kResultFalse;
     LPEnv = fval;
+    if (!streamer.readDouble(fval)) return kResultFalse;
+    MasterVolume = fval;
 
 	return kResultOk;
 }
@@ -298,6 +303,7 @@ tresult PLUGIN_API CTeodorSynth3001Processor::getState (IBStream* state)
     streamer.writeDouble(LPCutoff);
     streamer.writeDouble(LPOn);
     streamer.writeDouble(LPEnv);
+    streamer.writeDouble(MasterVolume);
 
 	return kResultOk;
 }
